@@ -4,7 +4,6 @@ from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 
-# Fetch API key and endpoint configuration
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 
@@ -29,7 +28,7 @@ def chat():
     }
     
     payload = {
-        "model": "llama-3.3-70b-versatile",
+        "model": "llama3-8b-8192",
         "messages": [
             {
                 "role": "system", 
@@ -47,12 +46,10 @@ def chat():
         res = requests.post(GROQ_URL, json=payload, headers=headers)
         res_data = res.json()
         
-        # Check if Groq returned choices
         if "choices" in res_data and len(res_data["choices"]) > 0:
             bot_reply = res_data["choices"][0]["message"]["content"]
             return jsonify({'response': bot_reply})
         else:
-            # Return the exact error from Groq if available to debug easily
             error_msg = res_data.get("error", {}).get("message", "Unknown Groq API error")
             return jsonify({'response': f"Groq Error: {error_msg}"})
             
